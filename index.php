@@ -4,5 +4,6 @@
     define('RUNTIME_PATH','./Runtime/');
     define('BIND_MODULE','Home');
     define('BIND_CONTROLLER','Index');
+    define('NO_CACHE_RUNTIME', true);
     require_once './lib/thinkphp/3.2.3/ThinkPHP.php';
 ?>

@@ -1,0 +1,168 @@
+#Guideline for using Agora Web SDK
+#Author:Gong Chen <chengong@agora.io>
+#Version: 0.5.0
+
+1. Release Contents
+    index.html			sample web client
+    AgoraSDK.js			agora js sdk library
+    vendor/adapter.js		google webrtc library (3rd party)
+    vendor/jquery.js		standard js library (3rd party)
+    vendor/socket.io.js		socket io library (3rd party)
+    assets/			web client resource
+
+2. Release Notes
+    - Enabled web based video communication.
+    - Supports audio-only mode, and video subscribe-only mode.
+    - Fixed browser crash issue when launching voice session between web client and PC/mobile client.
+
+3. Agora JS APIs
+    ========================================================================================
+    Class:			Agora.Client
+    Description:		include agora client methods - init/connect/join/leave etc.
+    Usage:			client = Agora.Client({});
+    ----------------------------------------------------------------------------------------
+    Method:			init		
+    Description:		agora client initialization
+    Usage:			client.init(key, channel, onFailure);
+    Parameter:
+        -key			unique vendor key, or test key
+        -channel		channel name, represents the voice room ID
+        -onFailure		the callback to handle initilizatoin error
+
+    Event:			client-initialized
+    Description:		Dispatched event to notify client successfully initialized
+    Usage:			cilent.on("client-initialized", callback);
+    Parameter:
+	-callback		the callback function to be invoked in event message handling
+				for ex. callback = function(evt){...};
+				we can get unique user ID from callback: uid = evt.attr.uid;
+    ----------------------------------------------------------------------------------------
+    Method:			connect
+    Description:		connect to voice server
+    Usage:			client.connect(onFailure);
+    Parameter:
+        -onFailure		the callback to handle connection error
+
+    Event:			client-connected
+    Description:		Dispatched event to notify client successfully connected to server
+    Usage:			cilent.on("client-connected", callback);
+    Parameter:
+	-callback		the callback function to be invoked in event message handling
+    ----------------------------------------------------------------------------------------
+    Method:			join
+    Description:		join the voice room
+    Usage:			client.join(onSuccess, onFailure);
+    Parameter:
+        -onSuccess		the callback to handle join success
+        -onFailure		the callback to handle join error
+
+    Event:			join-success
+    Description:		Dispatched event to notify client successfully joined to voice room
+    Usage:			cilent.on("join-success", callback);
+    Parameter:
+	-callback		the callback function to be invoked in event message handling
+                                normally user can start to create/handle stream in this callback
+    ----------------------------------------------------------------------------------------
+    Method:			publish
+    Description:		publish the local stream to server
+    Usage:			client.publish(stream, onFailure);
+    Parameter:
+        -stream			the local stream (refer to Agora.Stream)
+        -onFailure		the callback to handle publish stream error
+
+    Event:			stream-published
+    Description:		Dispatched event to notify stream successfully published to server
+    Usage:			cilent.on("stream-published", callback);
+    Parameter:
+	-callback		the callback function to be invoked in event message handling
+    ----------------------------------------------------------------------------------------
+    Event:			stream-added
+    Description:		Dispatched event to notify one remote stream is added to server
+    Usage:			cilent.on("stream-added", callback);
+    Parameter:
+	-callback		the callback function to be invoked in event message handling
+                                normally user can subscribe the stream in this callback
+				for ex. callback = function(evt){...};
+				we can get stream from callback: stream = evt.stream;
+    
+    Method:			subscribe
+    Description:		subscribe a stream from server
+    Usage:			client.subscribe(stream, onFailure);
+    Parameter:
+        -stream			the remote stream (refer to Agora.Stream)
+        -onFailure		the callback to handle subscribe stream error
+
+    Event:			stream-subscribed
+    Description:		Dispatched event to notify stream successfully subsribed from server
+    Usage:			cilent.on("stream-subscribed", callback);
+    Parameter:
+	-callback		the callback function to be invoked in event message handling
+    ----------------------------------------------------------------------------------------
+    Method:			leave
+    Description:		leaves from server
+    Usage:			client.leave();
+   
+    ========================================================================================
+    Class:			Agora.Stream
+    Description:		represents video/audio stream
+    Usage:			stream = Agora.Stream({streamID: uid, audio: true, video: true,
+                                                       data: false, screen: false});
+    Parameter:
+        -streamID		the user ID got from agora client init
+        -audio			voice communication is a MUST, set to true in all cases
+        -video			set to true if video is wanted
+    ----------------------------------------------------------------------------------------
+    Method:			setVideo
+    Description:		set the local video resolution and min/max framerate
+    Usage:			stream.init(res, [minFr, maxFr]);
+    Parameter:
+        -res			local video stream resolution:
+				    'sif':320x240
+				    'vga':640x480
+				    'hd720p':1280x720
+	-minFr			specify the minimum frame rate. 
+				video stream frame rate is adaptive to network bandwidth, by default it is 30fps.
+	-maxFr			specify the maximum frame rate.
+    ----------------------------------------------------------------------------------------
+    Method:			init
+    Description:		init the stream
+    Usage:			stream.init(onFailure);
+    Parameter:
+        -onFailure		the callback to handle stream init error
+
+    Event:			access-accepted
+    Description:		Dispatched event to notify stream successfully initialized
+    Usage:			stream.on("access-accepted", callback);
+    Parameter:
+	-callback		the callback function to be invoked in event message handling
+                                normally user can bind player and publish stream in this callback
+
+    ========================================================================================
+    Class:			Agora.AudioPlayer
+    Description:		audio stream player, should be binded to specific stream
+    Usage:			stream.player = Agora.AudioPlayer({id: stream.getID(), stream: stream,
+                                                                 elementID: elementID, options: options});
+    Parameter:
+        -id			stream ID
+        -stream			audio stream
+	-elementID		html element ID, normally it is div ID
+	-optioin		currently no use, set it to undefined
+    ========================================================================================
+    Class:			Agora.VideoPlayer
+    Description:		video stream player, should be binded to specific stream
+    Usage:			stream.player = Agora.VideoPlayer({id: stream.getID(), stream: stream,
+                                                                 elementID: elementID, options: options});
+    Parameter:
+        -id			stream ID
+        -stream			video stream
+	-elementID		html element ID, normally it is div ID, to display the video stream
+	-optioin		currently no use, set it to undefined
+
+4. Sample Web Client
+    index.html is the sample web client, it's the key reference for using Agora Web SDK.
+    Please try to launch it via web server(apache/nginx/nodejs), alone with the enclosed javascripts.
+
+5. Known Limitations
+    - unpublish/unsubscribe does not work so far
+    - stream remove event is not added
+

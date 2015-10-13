@@ -1,0 +1,72 @@
+<script>
+    var toggleSlide;
+</script>
+      <header data-spy='affix'>
+        <section>
+          <a class='brand' href='index.html'>
+            <?php echo C('web_title'); ?>
+          </a>
+          <ul id='navigation'>
+            <div class='trigger'>
+              <div class='bar'></div>
+              <div class='bar'></div>
+              <div class='bar'></div>
+            </div>
+            <li>
+              <a href='#' onclick="slideTo($('.slider li').eq(0), true)">首页</a>
+            </li>
+            <li>
+              <a href='#'>干货</a>
+              <ul>
+                <li><a class='anchor' href='#work'>Anchor link</a></li>
+                <li><a href='tera-slider.html'>Tera Slider</a></li>
+                <li><a href='icons.html'>Retina icons</a></li>
+                <li><a href='404.html'>404 Error page</a></li>
+                <li><a href='index-boxed.html'>Boxed layout</a></li>
+                <li><a href='profile.html'>Profile page</a></li>
+                <li><a href='elements.html'>Elements</a></li>
+              </ul>
+            </li>
+            <li>
+                <a href='#' onclick="slideTo($('#pitchroom'), false)">密谈</a>
+              <!--ul>
+                <li><a href='portfolio.html'>Default portfolio</a></li>
+                <li><a href='portfolio-no-spacing.html'>Portfolio no-spacing</a></li>
+                <li><a href='portfolio-3-columns.html'>3 Columns portfolio</a></li>
+                <li><a href='portfolio-lightbox.html'>Lightbox portfolio</a></li>
+                <li><a href='portfolio-caption.html'>Caption portfolio</a></li>
+                <li><a href='single.html'>Single page</a></li>
+              </ul-->
+            </li>
+            <li>
+              <a href='#'>关于</a>
+              <ul>
+                <li><a href='blog.html'>Blog default</a></li>
+                <li><a href='blog-sidebar.html'>Blog with sidebar</a></li>
+                <li><a href='blog-single.html'>Blog single</a></li>
+                <li><a href='blog-single-sidebar.html'>Blog single with sidebar</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href='contact.html'>联系</a>
+            </li>
+          </ul>
+        </section>
+      </header>
+      <script>
+        function slideTo($obj){
+            var $target = $obj;
+            var $slides = $(".slides");
+            var if_dark = typeof if_dark !== 'undefined' ? if_dark : true;
+            var marginWidth = $(".slider li").index($target) * $(window).width();
+            
+            // window.console ? console.log($(".slider li").index($target)) : '';
+            $(".slides").css("margin-left", "-" + marginWidth + "px");
+            $target.addClass("active");
+            
+            if($target.hasClass('dark')) // If the current slide is dark
+                $('body').addClass('dark-slide'); // Set dark mode
+            else
+                $('body').removeClass('dark-slide'); // Unset dark mode
+        }
+      </script>

@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>硅谷密探</title>
-    <meta charset='utf-8'>
-    <meta content='Description' name=''>
+    <title><?php echo C('web_title'); ?> - <?php echo C('web_subtitle') ?></title>
+    <include file="Common:head.meta"/>
     <meta content='1 day' name='revisit-after'>
     <meta content='width=device-width, initial-scale=1' name='viewport'>
     <link rel="shortcut icon" href="favicon.ico?v=5" type="image/x-icon">
     <!-- Fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,400italic,300italic,100italic,700italic,700' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
+    <!--link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,400italic,300italic,100italic,700italic,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'-->
     <!-- Styles -->
-    <link href="__PUBLIC__/stylesheets/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="__PUBLIC__/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="__PUBLIC__/stylesheets/style.css" rel="stylesheet" type="text/css" />
+    <include file="Common:head.style"/>
     <!-- HTML5 fallbacks -->
     <!--[if lt IE 9]>
     <script src="__PUBLIC__/javascripts/html5shiv.js" type="text/javascript"></script>
     <script src="__PUBLIC__/javascripts/respond.min.js" type="text/javascript"></script>
     <![endif]-->
+    <include file="Common:head.script"/>
+    <script src="__PUBLIC__/javascripts/jquery.min.js" type="text/javascript"></script>
+
+
     <style>
         body, p, h1, 
         #navigation li a, #filter-trigger, #filters {font-family: "微软雅黑", Arial, sans-serif;}
@@ -31,58 +32,7 @@
   </head>
   <body>
     <div class='container-fluid'>
-      <header data-spy='affix'>
-        <section>
-          <a class='brand' href='index.html'>
-            硅谷密探
-          </a>
-          <ul id='navigation'>
-            <div class='trigger'>
-              <div class='bar'></div>
-              <div class='bar'></div>
-              <div class='bar'></div>
-            </div>
-            <li>
-              <a href='index.html'>首页</a>
-            </li>
-            <li>
-              <a href='#'>关于</a>
-              <ul>
-                <li><a class='anchor' href='#work'>Anchor link</a></li>
-                <li><a href='tera-slider.html'>Tera Slider</a></li>
-                <li><a href='icons.html'>Retina icons</a></li>
-                <li><a href='404.html'>404 Error page</a></li>
-                <li><a href='index-boxed.html'>Boxed layout</a></li>
-                <li><a href='profile.html'>Profile page</a></li>
-                <li><a href='elements.html'>Elements</a></li>
-              </ul>
-            </li>
-            <li>
-                <a href='#'>推荐阅读</a>
-              <ul>
-                <li><a href='portfolio.html'>Default portfolio</a></li>
-                <li><a href='portfolio-no-spacing.html'>Portfolio no-spacing</a></li>
-                <li><a href='portfolio-3-columns.html'>3 Columns portfolio</a></li>
-                <li><a href='portfolio-lightbox.html'>Lightbox portfolio</a></li>
-                <li><a href='portfolio-caption.html'>Caption portfolio</a></li>
-                <li><a href='single.html'>Single page</a></li>
-              </ul>
-            </li>
-            <li>
-              <a href='#'>博客</a>
-              <ul>
-                <li><a href='blog.html'>Blog default</a></li>
-                <li><a href='blog-sidebar.html'>Blog with sidebar</a></li>
-                <li><a href='blog-single.html'>Blog single</a></li>
-                <li><a href='blog-single-sidebar.html'>Blog single with sidebar</a></li>
-              </ul>
-            </li>
-            <li>
-              <a href='contact.html'>联系我们</a>
-            </li>
-          </ul>
-        </section>
-      </header>
+        <include file="Common:body.header"/>
       <div class='slider'>
         <ul class='slides'>
           <li class='slide dark'>
@@ -109,13 +59,14 @@
               </section>
             </section>
           </li>
-          <li class='slide text-right'>
+          <li class='slide text-right' id="pitchroom">
             <section class='jumbotron'>
               <div class='bg' style='background-image:url(__PUBLIC__/images/projects/05.png);'></div>
               <section>
                 <div class='row'>
                   <div class='col-md-12 text-center'>
                     <h1>听硅谷工程狮，产品经理们分析110亿美元APP</h1>
+                    <p><a class="btn btn-primary" href="__ROOT__/index.php/pitchroom">进入房间</a></p>
                   </div>
                 </div>
               </section>
@@ -270,9 +221,9 @@
           <div class='col-md-6 col-md-offset-3'>
             <div class='text-center'>
               <div class='title-block'>
-                <h3>Perfectly Built</h3>
+                <h3>硅谷密探</h3>
               </div>
-              <p>With a unique custom slider (less than 3kb) specially tailored for the Tera Template and modified Masonry columns that keep a certain aspect ratio, it's one of the most advanced, yet simplest templates out there.</p>
+              <p>立足硅谷,聚集硅谷开发工程师及产品设计师,解析和推荐众多科技产品.</p>
             </div>
           </div>
         </div>
@@ -316,23 +267,8 @@
           </div>
         </div>
       </section>
-      <footer>
-        <section class='text-center'>
-          <div class='social'>
-            <a class='icon fa fa-dribbble' href='#'></a>
-            <a class='icon fa fa-behance' href='#'></a>
-            <a class='icon fa fa-facebook' href='#'></a>
-            <a class='icon fa fa-instagram' href='#'></a>
-            <a class='icon fa fa-twitter' href='#'></a>
-            <a class='icon fa fa-stumbleupon' href='#'></a>
-          </div>
-          <div class='copy'>
-            &copy; 2015 硅谷密探, Slicon Valley Insight. 版权所有
-          </div>
-        </section>
-      </footer>
+
     </div>
-    <script src="__PUBLIC__/javascripts/jquery.min.js" type="text/javascript"></script>
     <script src="__PUBLIC__/javascripts/jquery.easing.1.3.js" type="text/javascript"></script>
     <script src="__PUBLIC__/javascripts/jquery.mobile.custom.min.js" type="text/javascript"></script>
     <script src="__PUBLIC__/javascripts/tera-slider.js" type="text/javascript"></script>
