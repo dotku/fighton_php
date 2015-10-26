@@ -16,7 +16,8 @@
               <a href='#' onclick="slideTo($('.slider li').eq(0), true)">首页</a>
             </li>
             <li>
-              <a href='#'>干货</a>
+              <a href='javascript:void(0)' onclick="location.href='__ROOT__/index.php#work'">干货</a>
+              <!--
               <ul>
                 <li><a class='anchor' href='#work'>Anchor link</a></li>
                 <li><a href='tera-slider.html'>Tera Slider</a></li>
@@ -26,30 +27,41 @@
                 <li><a href='profile.html'>Profile page</a></li>
                 <li><a href='elements.html'>Elements</a></li>
               </ul>
+              -->
             </li>
+            <!--
             <li>
                 <a href='#' onclick="slideTo($('#pitchroom'), false)">密谈</a>
-              <!--ul>
+              <ul>
                 <li><a href='portfolio.html'>Default portfolio</a></li>
                 <li><a href='portfolio-no-spacing.html'>Portfolio no-spacing</a></li>
                 <li><a href='portfolio-3-columns.html'>3 Columns portfolio</a></li>
                 <li><a href='portfolio-lightbox.html'>Lightbox portfolio</a></li>
                 <li><a href='portfolio-caption.html'>Caption portfolio</a></li>
                 <li><a href='single.html'>Single page</a></li>
-              </ul-->
+              </ul>
             </li>
+            -->
             <li>
-              <a href='#'>关于</a>
+              <a href='./index.php#about'>关于</a>
+              <!--
               <ul>
                 <li><a href='blog.html'>Blog default</a></li>
                 <li><a href='blog-sidebar.html'>Blog with sidebar</a></li>
                 <li><a href='blog-single.html'>Blog single</a></li>
                 <li><a href='blog-single-sidebar.html'>Blog single with sidebar</a></li>
               </ul>
+              -->
             </li>
+            <!--
             <li>
               <a href='contact.html'>联系</a>
             </li>
+            <li>
+              <?php if (!$_SESSION['login']) { ?><a href='user_profile.html'>登入</a><?php } ?>
+              <?php if ($_SESSION['login']) { ?><a href='user_signout.html'>登出</a><?php } ?>
+            </li>
+            -->
           </ul>
         </section>
       </header>

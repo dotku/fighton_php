@@ -16,5 +16,6 @@ return array(
     //'DB_PREFIX' => 'think_', // 数据库表前缀 
     
     // 系统配置
-    'URL_HTML_SUFFIX'=>''
+    'URL_HTML_SUFFIX'=>'',
+	'AgoraKey' => 'ddab61fe6bee4e97b2a61a8774623e01'
 );

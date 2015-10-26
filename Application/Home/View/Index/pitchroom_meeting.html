@@ -10,31 +10,32 @@
     <!--link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,400italic,300italic,100italic,700italic,700' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'-->
     <!-- Styles -->
-    <include file="Common:head.style"/>
+    <include file="Common:head.style_bootstrap"/>
     <!-- HTML5 fallbacks -->
     <!--[if lt IE 9]>
     <script src="__PUBLIC__/javascripts/html5shiv.js" type="text/javascript"></script>
     <script src="__PUBLIC__/javascripts/respond.min.js" type="text/javascript"></script>
     <![endif]-->
     <include file="Common:head.script"/>
-    <script src="__PUBLIC__/javascripts/jquery.min.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/lib/agora/v0.6.0/vendor/jquery.js"></script>
     <script src="__PUBLIC__/lib/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="__PUBLIC__/lib/agora-web-sdk/v0.5.1/vendor/socket.io.js"></script>
-    <script src="__PUBLIC__/lib/agora-web-sdk/v0.5.1/vendor/adapter.js"></script>
-    <script src="__PUBLIC__/lib/agora-web-sdk/v0.5.1/AgoraSDK.js"></script>
+    
+    <script src="__PUBLIC__/lib/agora/v0.6.0/vendor/socket.io.js"></script>
+    <script src="__PUBLIC__/lib/agora/v0.6.0/vendor/adapter.js"></script>
+    <script src="__PUBLIC__/lib/agora/v0.6.0/AgoraRTCSDK.js"></script>
     <style>
+        body, html {height: 100%}
         body, p, h1, 
         #navigation li a, #filter-trigger, #filters {font-family: "微软雅黑", Arial, sans-serif;}
-        @media (max-width: 780px) {
-            #navigation li {
-                border-bottom: solid 1px #eee;
-            }
-        }
+        
         .main{
             padding: 0px;
             height: 100%;
+            border-right: 1px solid #123;
         }
         .full {
+            display: block;
+            width: 100%;
             height: 100%;
         }
         .main-menu {
@@ -54,32 +55,60 @@
         .bar {
           background: #fff;
         }
+        .chat-msg { height: 300px; overflow-y: scroll; padding-top: 10px; padding-left: 10px; padding-bottom: 10px}
+        .chat-msg .msg-row {min-height: 20px; padding-top: 10px; padding-bottom: 10px; text-align: left; height: auto;}
+        .chat-msg .row-name {padding-bottom: 5px; color: #abc}
+        .chat-msg .me {text-align: right}
+        .chat-msg .me .row-name {padding-bottom: 5px; color: #963; }
+        .chat-msg .row-content { padding: 10px;}
     </style>
-<script>
+    <script>
     var G = {};
     G.Agora_root = "__ROOT__/Public/lib/agora-api";
-</script>
+    </script>
 </head>
 
 <body>
-<div class="full">
+<div class="full clearfix">
     <div class="main col-md-9">
-         <div id="video_remote" style="position: absolute; top: 0px; width:100%; height: 100%; background-color: black">
+         <div id="video_remote" 
+            style="position: absolute; top: 0px; width:100%; height: 100%; background-color: black">
             <div id="agora_remote" style="height: 100%; width: 100%"></div>
         </div>
-        <div class="main-menu">
-            <a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" style="font-size: 20px;">三 <span class="caret"></span></a>
+        <?php if ($_SESSION['login']) {?>
+        <!--div class="main-menu">
+            <a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" style="font-size: 20px;"><i class="glyphicon glyphicon-menu-hamburger"></i>
+                <span class="caret"></span>
+            </a>
             <ul class="dropdown-menu">
-                <li><a href="{:U('/user_profile')}">修改昵称</a></li>
+                <!-- <li><a href="{:U('/user_profile')}">修改昵称</a></li>
                 <li><a href="{:U('/pitchroom_leave')}">回房间列表</a></li>
-                <li role="separator" class="divider"></li>
+                <li role="separator" class="divider"></li> ->
                 <li><a href="{:U('/user_signout')}">退出</a></li>
             </ul>
+        </div--><!--/mainMenu-->
+        <?php } else { ?>
+        <div class="main-menu">
+            <a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" style="font-size: 20px;"><i class="glyphicon glyphicon-menu-hamburger"></i>
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="{:U('/')}">回首页</a></li>
+               <!--  <li><a href="{:U('/pitchroom_leave')}">回房间列表</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{:U('/user_profile')}">登录</a></li> -->
+            </ul>
         </div>
-        <?php if ($_SESSION['login']['id'] == $_SESSION['pitchroom']['hostid']) {?>
+        <?php } ?>
+        <?php if ($is_owner) {?>
         <div class="main-btnbar col-md-6 col-md-offset-3 text-center" style="position: absolute; bottom: 40px;">
             <!-- unkown parsing bug {:U()} -->
-            <a class="btn btn-primary" href="{:U('/pitchroom_start')}">开始</a>
+            <?php if($is_host) {?>
+                <a id="join" class="btn btn-primary" href="<?php echo U('/pitchroom_start') . '/' . I('path.1');?>">开始</a>
+            <?php } else {?>
+                <!-- unkown parsing bug {:U()} -->
+                <a id="join" class="btn btn-primary" href="javascript:void(0)" onclick="join();">开始</a>
+            <?php } ?>
             <a class="btn btn-primary" href="{:U('/pitchroom_invite')}">邀请</a>
             <a class="btn btn-primary">3</a>
             <a class="btn btn-primary">4</a>
@@ -87,151 +116,175 @@
             
         </div>
         <?php } ?>
-        <div class="mssage" style="position: relative; top: 100px;">
+       <!--  <div class="mssage" style="position: relative; top: 100px; background-color: white">
             <?php 
-            //var_dump($_SESSION);
-        ?>
-        </div>
+                //var_dump($_SESSION);
+                //var_dump($output);
+            ?>
+        </div> -->
         
 
     </div>
-    <div class="sidebar col-md-3" style="padding: 0px;">
-        <div id="video" style="position: absolute; top: 0px; width:100%; height: 240px; background-color: black">
+    <div class="sidebar col-md-3" style="padding: 0px; height: 100%">
+    
+        <div id="video_local" style="width:100%; height: 240px; background-color: black">
             <div id="agora_local" style="height: 100%; width: 100%"></div>
         </div>
-        侧边栏
-    <div>
+        <div style="text-align: center;">
+          <img src="__PUBLIC__/images/2015/10/logo.jpg" style="width:60%; padding-top:35px;">
+          <p style="padding-top: 30px; text-size: 20px;">微信扫一扫，关注硅谷密探</p>
+          <img src="__PUBLIC__/images/2015/10/svinsight_qr.jpg" style="width:60%; padding-bottom:80px;">
+        </div>
 </div>
-<input id="key" type="text" value="ddab61fe6bee4e97b2a61a8774623e01" size="36" type="hidden">
-<input id="channel" type="text" value="{$_SESSION['pitchroom']['id']}" size="4" type="hidden">
+<input id="channel" value="{:I('path.1')}" size="4" type="hidden">
+
+
 <script>
+var rURL = "{:U('/getAgoraKey')}";
 $(function(){
     $(window).resize(function(){
         $(".main").height($(window).height());
     })
 })
 </script>
-<?php if ($output['pitchroom_status'] == 1) { ?>
+<?php if ($output['pitchroom_status'] == 1 && $is_owner) { ?>
 <script>
 $(function(){
     join();
 })
 </script>
-<?php } else {?>
-<?php 
-    //var_dump($output); 
-?>
 <?php } ?>
+<?php if (!$is_owner) {?>
+<script>
+    $(function(){
+        $.getJSON(rURL, function(r){
+                client = AgoraRTC.createClient();
+      client.init(r.key, function () {
+    console.log("AgoraRTC client initialized: " + r.key);
+    var token = undefined;
+    client.join(token, channel.value, function(uid) {
+      console.log("User " + uid + " join channel "+ channel.value +" successfully");
+      //localStream = AgoraRTC.createStream({streamID: uid, audio: false, video: false, screen: false});
+      /*localStream.init(function() {
+        console.log("getUserMedia successfully");
+        localStream.play('agora_local');
+      }, function (err) {
+        console.log("getUserMedia failed", err);
+      });*/
+    }, function(err) {
+      console.log("Join channel failed", err);
+    });
+  }, function (err) {
+    console.log("AgoraRTC client init failed", err);
+  });
+
+  client.on('stream-added', function (evt) {
+    var stream = evt.stream;
+    console.log("New stream added: " + stream.getId());
+    console.log("Subscribe ", stream);
+    client.subscribe(stream, function (err) {
+      console.log("Subscribe stream failed", err);
+    });
+  });
+
+  client.on('stream-subscribed', function (evt) {
+    var stream = evt.stream;
+    console.log("Subscribe remote stream successfully: " + stream.getId());
+    if (stream.getId() == "<?php echo $output['info_pitchroom']['hostkey'] ?>") {
+        if ($('div#video_remote #agora_remote'+stream.getId()).length === 0) {
+          $('div#video_remote').html('<div id="agora_remote'+stream.getId()+'" style="width:100%;height:100%"></div>');
+        }
+        stream.play('agora_remote' + stream.getId());
+    } else if (stream.getId() == "<?php echo $output['info_pitchroom']['guestkey'] ?>") {
+        $('div#video_local').html('<div id="agora_local'+stream.getId()+'" style="width:100%;height:100%"></div>');
+        stream.play('agora_local' + stream.getId());
+    }
+  });
+        })
+
+  });
+  </script>
+<?php }?>
+
 <script language="javascript">
 
-  var client, localStream;
+var client, localStream;
 
-  function bindPlayer(stream) {
-    console.log("bindPlayer");
-    stream.showing= false;
-    stream.show = function (elementID, options) {
-      if (stream.hasVideo() || stream.hasScreen()) {
-        if (elementID !== undefined) {
-          stream.player = new Agora.VideoPlayer({
-            id: stream.getId(),
-            stream: stream,
-            elementID: elementID,
-            options: options});
-          stream.showing = true;
+function join() {
+  //document.getElementById("join").disabled = true;
+  //document.getElementById("video").disabled = true;
+  $.getJSON(rURL, function(r){
+  console.log("Init AgoraRTC client with vendor key: " + r.key);
+  client = AgoraRTC.createClient();
+  client.init(r.key, function () {
+    console.log("AgoraRTC client initialized");
+    var token = undefined;
+    client.join(token, channel.value, function(uid) {
+      console.log("User " + uid + " join channel successfully");
+      localStream = AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false});
+      localStream.init(function() {
+        console.log("getUserMedia successfully");
+        $("#agora_local").html('');
+        localStream.play('agora_local');
+        <?php if ($is_owner) { ?>
+                url = "__ROOT__/index.php/pitchroom_update";
+                data = {
+                    id : <?php echo I('path.1')?>,
+                    <?php if($is_host) {  ?>hostkey :  uid <?php }?>
+                    <?php if($is_guest) { ?>guestkey : uid <?php }?>
+                }
+                $.getJSON(url, data, function(rsp) {
+                    console.log(rsp);
+                })
+           <?php } ?>
+        client.publish(localStream, function (err) {
+          console.log("Publish local stream error: " + err);
+        });
+
+        client.on('stream-published', function (evt) {
+          console.log("Publish local stream successfully");
+          
+        });
+      }, function (err) {
+        console.log("getUserMedia failed", err);
+      });
+
+    }, function(err) {
+      console.log("Join channel failed", err);
+    });
+  }, function (err) {
+    console.log("AgoraRTC client init failed", err);
+  });
+
+  client.on('stream-added', function (evt) {
+    var stream = evt.stream;
+    console.log("New stream added: " + stream.getId());
+    console.log("Subscribe ", stream);
+    client.subscribe(stream, function (err) {
+      console.log("Subscribe stream failed", err);
+    });
+  });
+
+  client.on('stream-subscribed', function (evt) {
+    var stream = evt.stream;
+    console.log("Subscribe remote stream successfully: " + stream.getId());
+        if ($('div#video_remote #agora_remote'+stream.getId()).length === 0) {
+          $('div#video_remote').html('<div id="agora_remote'+stream.getId()+'" style="width:100%;height:100%"></div>');
         }
-      } else if (stream.hasAudio()) {
-        stream.player = new Agora.AudioPlayer({
-          id: stream.getId(),
-          stream: stream,
-          elementID: elementID,
-          options: options});
-        stream.showing = true;
-      }
-    };
-    stream.play = stream.show;
-  }
+        stream.play('agora_remote' + stream.getId());
+    
+  });
+})
+}
 
-  function join() {
-    document.getElementById("video").disabled = false;
-    console.log('Joining channel ' + key.value + ' : ' + channel.value);
-    client = Agora.Client({
-    });
-    client.init(key.value, channel.value, function (err) {
-      console.log("Connecting to vocs failed", err);
-    });
-    client.on('client-initialized', function (evt) {
-      var data = evt.attr;
-      console.log("Connecting vocs done", JSON.stringify(data['vos_list'][0]));
-      var uid = data.uid;
-      console.log("Connecting to vos gateway");
-      client.connect(function (err) {
-        console.log("Join vos gateway failed", err);
-      });
-      client.on('client-connected', function (evt) {
-        console.log("Join vos gateway successfully");
-        console.log("Login to vos");
-        client.join(function (msg) {
-          console.log(msg);
-        });
-        client.on('join-success', function () {
-          console.log("Join vos successfully");
-          localStream = Agora.Stream({
-            streamID: uid, 
-            audio: true, 
-            video: document.getElementById("video").checked,
-            data: false, screen: false});
-          //if (document.getElementById("video").checked) {
-            // 总是要设置视频
-            localStream.setVideo("sif", [15, 60]);
-          //}
-          localStream.init(function (err) {
-            console.log("Media access failed", err);
-          });
-          localStream.on('access-accepted', function () {
-            bindPlayer(localStream);
-            console.log("Media access successfully: streamId = ", localStream.getId());
-            localStream.show('agora_local');
-            console.log("Publish local stream");
-            client.publish(localStream, function (err) {
-              console.log("Publish local stream error: " + err);
-            });
-            client.on('stream-published', function (evt) {
-              var stream = evt.stream;
-              console.log("Catch stream-published event");
-            });
-          });
-        });
-        client.on('stream-added', function (evt) {
-          console.log("Catch stream-added event");
-          var stream = evt.stream;
-          console.log("Subscribe ", stream);
-          bindPlayer(stream);
-          client.subscribe(stream, function (err) {
-            console.log("Subscribe failed", err);
-          });
-        });
-        client.on('stream-subscribed', function (evt) {
-          console.log("Catch stream-subscribed event");
-          var stream = evt.stream;
-          if ($('div#video_remote #agora_remote'+stream.getId()).length === 0) {
-            $('div#video_remote').html('<div id="agora_remote'+stream.getId()+'" style="width:320px;height:240px"></div>');
-          }
-          stream.show('agora_remote'+stream.getId());
-        });
-      });
-    });
-  }
-
-  function unpublish() {
-    client.unpublish(localStream, function (err) {
-      console.log("unpublish error", err);
-    });
-  }
-
-  function leave() {
-    console.log("leave");
-    client.leave();
-  }
+function leave() {
+  document.getElementById("leave").disabled = true;
+  client.leave(function () {
+    console.log("Leavel channel successfully");
+  }, function (err) {
+    console.log("Leave channel failed");
+  });
+}
 </script>
 </body>
 </html>
